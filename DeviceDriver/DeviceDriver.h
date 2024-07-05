@@ -1,5 +1,8 @@
 #pragma once
 #include "FlashMemoryDevice.h"
+#include <vector>
+
+using namespace std;
 
 class DeviceDriver
 {
@@ -10,4 +13,9 @@ public:
 
 protected:
     FlashMemoryDevice* m_hardware;
+
+    const int READ_COUNT = 5;
+
+    vector<int> readFlashSeveralTimes(long address, int count);
+    void checkValidity(vector<int> data);
 };

@@ -9,14 +9,20 @@ using namespace std;
 
 class DeviceDriverTest : public testing::Test
 {
+public:
+    void SetUp() override
+    {
+        address = ADDRESS_A;
+    }
 protected:
+    long address;
+    const long ADDRESS_A = 0x0A;
+
     MockedFlash mockedFlash;
     DeviceDriver deviceDriver{ &mockedFlash };
 };
 
 TEST_F(DeviceDriverTest, ReadFiveTimes) {
-    long address = 0xA0;
-
     EXPECT_CALL(mockedFlash, getData(testing::_))
         .Times(5)
         .WillRepeatedly(testing::Return(0));
@@ -26,8 +32,6 @@ TEST_F(DeviceDriverTest, ReadFiveTimes) {
 }
 
 TEST_F(DeviceDriverTest, ReadValidData) {
-    long address = 0xA0;
-
     EXPECT_CALL(mockedFlash, getData(testing::_))
         .Times(5)
         .WillRepeatedly(testing::Return(0));
@@ -43,8 +47,6 @@ TEST_F(DeviceDriverTest, ReadValidData) {
 }
 
 TEST_F(DeviceDriverTest, ReadInvalidData) {
-    long address = 0xA0;
-
     EXPECT_CALL(mockedFlash, getData(testing::_))
         .Times(5)
         .WillOnce(testing::Return(1))
