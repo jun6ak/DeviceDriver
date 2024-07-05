@@ -8,19 +8,19 @@ int DeviceDriver::read(long address)
 {
     vector<int> data = readFlashSeveralTimes(address, READ_COUNT);
 
-    checkReadValidity(data);
+    checkDataVailidity(data);
 
     return *data.begin();
 }
 
 void DeviceDriver::write(long address, int data)
 {
-    checkWriteValidity(address);
+    checkMemoryRegionValidity(address);
 
     m_hardware->write(address, (unsigned char)data);
 }
 
-void DeviceDriver::checkWriteValidity(long address)
+void DeviceDriver::checkMemoryRegionValidity(long address)
 {
     int originData = read(address);
 
@@ -42,7 +42,7 @@ vector<int> DeviceDriver::readFlashSeveralTimes(long address, int count)
     return data;
 }
 
-void DeviceDriver::checkReadValidity(vector<int> data)
+void DeviceDriver::checkDataVailidity(vector<int> data)
 {
     if (data.size() == 0)
     {

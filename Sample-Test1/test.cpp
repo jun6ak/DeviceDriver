@@ -14,43 +14,47 @@ public:
     {
         address = ADDRESS_A;
     }
+
+    void mockNextValidReadData(int data)
+    {
+        EXPECT_CALL(mockedFlash, getData(testing::_))
+            .Times(VALID_READ_COUNT)
+            .WillRepeatedly(testing::Return(data));
+    }
+
+    void mockNextInvalidReadData(int data)
+    {
+        EXPECT_CALL(mockedFlash, getData(testing::_))
+            .Times(VALID_READ_COUNT)
+            .WillOnce(testing::Return(data + 1))
+            .WillRepeatedly(testing::Return(data));
+    }
+
 protected:
     long address;
     const long ADDRESS_A = 0x0A;
+    const unsigned char BLANK_BYTE = 0xFF;
+    const int VALID_READ_COUNT = 5;
 
     MockedFlash mockedFlash;
     DeviceDriver deviceDriver{ &mockedFlash };
 };
 
 TEST_F(DeviceDriverTest, ReadFiveTimes) {
-    EXPECT_CALL(mockedFlash, getData(testing::_))
-        .Times(5)
-        .WillRepeatedly(testing::Return(0));
+    mockNextValidReadData(BLANK_BYTE);
 
-    EXPECT_EQ(deviceDriver.read(address), 0);
-    EXPECT_EQ(mockedFlash.getReadCount(), 5);
+    EXPECT_EQ(deviceDriver.read(address), BLANK_BYTE);
+    EXPECT_EQ(mockedFlash.getReadCount(), VALID_READ_COUNT);
 }
 
 TEST_F(DeviceDriverTest, ReadValidData) {
-    EXPECT_CALL(mockedFlash, getData(testing::_))
-        .Times(5)
-        .WillRepeatedly(testing::Return(0));
+    mockNextValidReadData(BLANK_BYTE);
 
-    try
-    {
-        EXPECT_EQ(deviceDriver.read(address), 0);
-    }
-    catch (...)
-    {
-        FAIL();
-    }
+    EXPECT_EQ(deviceDriver.read(address), BLANK_BYTE);
 }
 
 TEST_F(DeviceDriverTest, ReadInvalidData) {
-    EXPECT_CALL(mockedFlash, getData(testing::_))
-        .Times(5)
-        .WillOnce(testing::Return(1))
-        .WillRepeatedly(testing::Return(0));
+    mockNextInvalidReadData(BLANK_BYTE);
 
     try
     {
@@ -64,17 +68,13 @@ TEST_F(DeviceDriverTest, ReadInvalidData) {
 }
 
 TEST_F(DeviceDriverTest, WriteData) {
-    EXPECT_CALL(mockedFlash, getData(testing::_))
-        .Times(5)
-        .WillRepeatedly(testing::Return(0xFF));
+    mockNextValidReadData(BLANK_BYTE);
 
     deviceDriver.write(address, 0x0);
 }
 
 TEST_F(DeviceDriverTest, WriteDataInvalidRegion) {
-    EXPECT_CALL(mockedFlash, getData(testing::_))
-        .Times(5)
-        .WillRepeatedly(testing::Return(0x0));
+    mockNextValidReadData(0);
 
     EXPECT_THROW(deviceDriver.write(address, 0x0), exception);
 }

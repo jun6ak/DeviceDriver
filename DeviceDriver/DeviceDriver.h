@@ -18,6 +18,6 @@ protected:
     const int READ_COUNT = 5;
 
     vector<int> readFlashSeveralTimes(long address, int count);
-    void checkReadValidity(vector<int> data);
-    void checkWriteValidity(long address);
+    void checkDataVailidity(vector<int> data);
+    void checkMemoryRegionValidity(long address);
 };
