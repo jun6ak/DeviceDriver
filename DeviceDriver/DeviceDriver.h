@@ -11,11 +11,13 @@ public:
     int read(long address);
     void write(long address, int data);
 
+
 protected:
     FlashMemoryDevice* m_hardware;
 
     const int READ_COUNT = 5;
 
     vector<int> readFlashSeveralTimes(long address, int count);
-    void checkValidity(vector<int> data);
+    void checkReadValidity(vector<int> data);
+    void checkWriteValidity(long address);
 };

@@ -62,3 +62,19 @@ TEST_F(DeviceDriverTest, ReadInvalidData) {
         EXPECT_EQ(string("[READ ERROR] Flash Memory is not unstable."), string(e.what()));
     }
 }
+
+TEST_F(DeviceDriverTest, WriteData) {
+    EXPECT_CALL(mockedFlash, getData(testing::_))
+        .Times(5)
+        .WillRepeatedly(testing::Return(0xFF));
+
+    deviceDriver.write(address, 0x0);
+}
+
+TEST_F(DeviceDriverTest, WriteDataInvalidRegion) {
+    EXPECT_CALL(mockedFlash, getData(testing::_))
+        .Times(5)
+        .WillRepeatedly(testing::Return(0x0));
+
+    EXPECT_THROW(deviceDriver.write(address, 0x0), exception);
+}

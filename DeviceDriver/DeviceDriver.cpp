@@ -8,15 +8,26 @@ int DeviceDriver::read(long address)
 {
     vector<int> data = readFlashSeveralTimes(address, READ_COUNT);
 
-    checkValidity(data);
+    checkReadValidity(data);
 
     return *data.begin();
 }
 
 void DeviceDriver::write(long address, int data)
 {
-    // TODO: implement this method
+    checkWriteValidity(address);
+
     m_hardware->write(address, (unsigned char)data);
+}
+
+void DeviceDriver::checkWriteValidity(long address)
+{
+    int originData = read(address);
+
+    if (0xFF != originData)
+    {
+        throw runtime_error("[WRITE ERROR] Must be empty(0xFF) before writing data.");
+    }
 }
 
 vector<int> DeviceDriver::readFlashSeveralTimes(long address, int count)
@@ -31,7 +42,7 @@ vector<int> DeviceDriver::readFlashSeveralTimes(long address, int count)
     return data;
 }
 
-void DeviceDriver::checkValidity(vector<int> data)
+void DeviceDriver::checkReadValidity(vector<int> data)
 {
     if (data.size() == 0)
     {

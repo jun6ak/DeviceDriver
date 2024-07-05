@@ -4,10 +4,7 @@
 class FlashSimulator : public FlashMemoryDevice
 {
 public:
-    FlashSimulator() : readCount{ 0 } {}
-
-    //MOCK_METHOD(unsigned char, read, (long address), (override));
-    //MOCK_METHOD(void, wirte, (long address, unsigned char data), (override));
+    FlashSimulator() : readCount{ 0 } { }
 
     unsigned char read(long address) override
     {
@@ -32,8 +29,6 @@ public:
 
 protected:
     int readCount;
-
-
 };
 
 class MockedFlash : public FlashSimulator
