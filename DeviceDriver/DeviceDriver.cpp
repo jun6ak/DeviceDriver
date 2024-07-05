@@ -5,13 +5,13 @@ DeviceDriver::DeviceDriver(FlashMemoryDevice* hardware) : m_hardware(hardware)
 
 int DeviceDriver::read(long address)
 {
-    int value = 0;
+    int data = 0;
     for (int i = 0; i < 5; i++)
     {
-        value = (int)(m_hardware->read(address));
+        data = (int)(m_hardware->read(address));
     }
 
-    return value;
+    return data;
 }
 
 void DeviceDriver::write(long address, int data)

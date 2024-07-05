@@ -1,10 +1,10 @@
 #include "../DeviceDriver/FlashMemoryDevice.h"
 #include "gmock/gmock.h"
 
-class MockedFlashMemoryDevice : public FlashMemoryDevice
+class FlashSimulator : public FlashMemoryDevice
 {
 public:
-    MockedFlashMemoryDevice() : readCount{ 0 } {}
+    FlashSimulator() : readCount{ 0 } {}
 
     //MOCK_METHOD(unsigned char, read, (long address), (override));
     //MOCK_METHOD(void, wirte, (long address, unsigned char data), (override));
@@ -12,12 +12,12 @@ public:
     unsigned char read(long address) override
     {
         readCount++;
-        return 0;
+        return getData(address);
     }
 
     void write(long address, unsigned char data) override
     {
-
+        return;
     }
 
     int getReadCount()
@@ -25,6 +25,21 @@ public:
         return readCount;
     }
 
-private:
+    virtual unsigned char getData(long address)
+    {
+        return 0;
+    }
+
+protected:
     int readCount;
+
+
+};
+
+class MockedFlash : public FlashSimulator
+{
+public:
+    MockedFlash() : FlashSimulator{ } {}
+
+    MOCK_METHOD(unsigned char, getData, (long address), (override));
 };
