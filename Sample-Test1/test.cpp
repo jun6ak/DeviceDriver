@@ -17,14 +17,14 @@ public:
 
     void mockNextValidReadData(int data)
     {
-        EXPECT_CALL(mockedFlash, getData(testing::_))
+        EXPECT_CALL(mockedFlash, read(testing::_))
             .Times(VALID_READ_COUNT)
             .WillRepeatedly(testing::Return(data));
     }
 
     void mockNextInvalidReadData(int data)
     {
-        EXPECT_CALL(mockedFlash, getData(testing::_))
+        EXPECT_CALL(mockedFlash, read(testing::_))
             .Times(VALID_READ_COUNT)
             .WillOnce(testing::Return(data + 1))
             .WillRepeatedly(testing::Return(data));
@@ -44,7 +44,6 @@ TEST_F(DeviceDriverTest, ReadFiveTimes) {
     mockNextValidReadData(BLANK_BYTE);
 
     EXPECT_EQ(deviceDriver.read(address), BLANK_BYTE);
-    EXPECT_EQ(mockedFlash.getReadCount(), VALID_READ_COUNT);
 }
 
 TEST_F(DeviceDriverTest, ReadValidData) {
@@ -69,6 +68,8 @@ TEST_F(DeviceDriverTest, ReadInvalidData) {
 
 TEST_F(DeviceDriverTest, WriteData) {
     mockNextValidReadData(BLANK_BYTE);
+
+    EXPECT_CALL(mockedFlash, write(testing::_, testing::_)).Times(1);
 
     deviceDriver.write(address, 0x0);
 }
