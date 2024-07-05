@@ -1,8 +1,16 @@
 #pragma once
 
+#include "DeviceDriver.h"
+
 class Application
 {
 public:
-    void ReadAndPrint(long startAddr, long endAddr);
-    void WriteAll(int value);
+    Application(DeviceDriver* driver)
+        : deviceDriver{ driver } { }
+
+    void readAndPrint(long startAddr, long endAddr);
+    void writeAll(int value);
+
+private:
+    DeviceDriver* deviceDriver;
 };
