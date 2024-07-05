@@ -10,19 +10,14 @@ using namespace std;
 class ApplicationTest : public testing::Test
 {
 public:
-    void mockNextValidReadData(long address, int data)
+    void mockNextValidReadData(long startAddr, long endAddr, int data)
     {
-        EXPECT_CALL(mockedFlash, read(address))
-            .Times(VALID_READ_COUNT)
-            .WillRepeatedly(testing::Return(data));
-    }
-
-    void mockNextInvalidReadData(int data)
-    {
-        EXPECT_CALL(mockedFlash, read(testing::_))
-            .Times(VALID_READ_COUNT)
-            .WillOnce(testing::Return(data + 1))
-            .WillRepeatedly(testing::Return(data));
+        for (long addr = startAddr; addr <= endAddr; addr++)
+        {
+            EXPECT_CALL(mockedFlash, read(addr))
+                .Times(VALID_READ_COUNT)
+                .WillRepeatedly(testing::Return(data));
+        }
     }
 
 protected:
@@ -36,10 +31,15 @@ protected:
 
 TEST_F(ApplicationTest, ReadAndPrint)
 {
-    mockNextValidReadData(1, BLANK_BYTE);
-    mockNextValidReadData(2, BLANK_BYTE);
-    mockNextValidReadData(3, BLANK_BYTE);
-    mockNextValidReadData(4, BLANK_BYTE);
+    // Arrange
+    mockNextValidReadData(1, 4, BLANK_BYTE);
+    testing::internal::CaptureStdout();
 
+    // Act
     application.readAndPrint(1, 4);
+
+    // Assert
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_EQ(string("FFFFFFFF"), output);
 }
+
